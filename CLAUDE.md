@@ -201,6 +201,15 @@ The Claude API model for AI import (Phase 4) is `claude-sonnet-4-20250514`.
 
 ## Progress
 
+### Phase 3 — 2026-05-30
+- **Completed:** Fuzzy search (Fuse.js v7.3.0 inline), category browse with drill-down, deep link navigation, 3 new data.js helpers, 14 new tests (75 total)
+- **Key decisions:**
+  - Fuse.js v7.3.0 ships CJS-only (no UMD). Wrapped in IIFE `var Fuse = (function(){ var module={exports:{}}; [source]; return module.exports; })();` to expose as browser global.
+  - `generate-index.js` utility writes `index.html` by splicing the Fuse source in at build time — keeps diffs readable and avoids manually maintaining 24KB of minified JS in-place.
+  - Search index built lazily on first keystroke. Set `fuseInstance = null` to invalidate after Phase 4 imports.
+  - Browse drill-down uses show/hide of two sub-divs within the same screen — keeps nav state clean, avoids a fourth tab.
+  - Event delegation for cat cards and result items (no inline onclick) — avoids XSS risks from user-controlled data in handler attributes.
+
 ### Phase 2 — 2026-05-30
 - **Completed:** `index.html` (app shell + 3-screen nav + settings UI), `manifest.json`, `sw.js`, `icons/icon.svg`, `icons/icon-192.png`, `icons/icon-512.png`, `create-icons.js` (utility to regenerate icons)
 - **Key decisions:**

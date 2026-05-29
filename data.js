@@ -838,6 +838,56 @@ function getMerchantsByCategory(category) {
   return getAllMerchants().filter(m => m.category === category);
 }
 
+function buildImportPayload(programId, programName, rawText) {
+  const prompt =
+    'You are extracting merchant and perk data from raw text copied from a benefits portal.\n\n' +
+    'Extract every merchant or perk listed and return them as a JSON array.\n\n' +
+    'Program ID: ' + programId + '\n' +
+    'Program Name: ' + programName + '\n\n' +
+    'Each object in the array must have EXACTLY these fields (all must be strings):\n' +
+    '  "id"          — kebab-case slug unique to this merchant+program, e.g. "woolworths-' + programId + '"\n' +
+    '  "name"        — merchant display name\n' +
+    '  "program"     — must be "' + programId + '"\n' +
+    '  "category"    — best fit from: Electronics, Travel, Flights, Accommodation, Car Rental, Grocery, Dining, Fashion, Health, Beauty, Entertainment, Streaming, Financial, Insurance, Automotive, General Retail, Home, Sport, Education, Pets, Other\n' +
+    '  "discount"    — concise benefit description, e.g. "5% off all purchases instore and online"\n' +
+    '  "description" — verbose, human-readable. Explain who the merchant is and what the specific benefit is, as if to someone who has never heard of them.\n' +
+    '  "deepLink"    — URL to the offer page if found in the text, otherwise empty string ""\n' +
+    '  "addedAt"     — use exactly this value: "' + new Date().toISOString() + '"\n\n' +
+    'Return ONLY a valid JSON array. No markdown, no code fences, no explanation. Raw JSON only.\n\n' +
+    'TEXT:\n' + rawText;
+
+  return {
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 4096,
+    messages: [{ role: 'user', content: prompt }],
+  };
+}
+
+function parseExtractedMerchants(content, programId) {
+  const cleaned = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
+  let parsed;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch (e) {
+    throw new Error('Could not parse AI response as JSON: ' + e.message);
+  }
+  if (!Array.isArray(parsed)) {
+    throw new Error('AI response is not a JSON array');
+  }
+  const now = new Date().toISOString();
+  const merchants = [];
+  let skipped = 0;
+  for (const m of parsed) {
+    const candidate = Object.assign({}, m, { program: programId, addedAt: now });
+    if (validateMerchant(candidate)) {
+      merchants.push(candidate);
+    } else {
+      skipped++;
+    }
+  }
+  return { merchants, skipped };
+}
+
 function loadApiKey() {
   return localStorage.getItem('perks_api_key') || '';
 }
@@ -871,5 +921,7 @@ if (typeof module !== 'undefined' && module.exports) {
     getAllMerchants,
     getCategoryList,
     getMerchantsByCategory,
+    buildImportPayload,
+    parseExtractedMerchants,
   };
 }

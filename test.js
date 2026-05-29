@@ -30,6 +30,8 @@ const {
   getAllMerchants,
   getCategoryList,
   getMerchantsByCategory,
+  buildImportPayload,
+  parseExtractedMerchants,
 } = require('./data.js');
 
 // ─── test runner ────────────────────────────────────────────────────────────
@@ -651,6 +653,118 @@ test('deep link: non-empty deepLinks start with http', () => {
   for (const m of withLinks) {
     assert(m.deepLink.startsWith('http'), `deepLink should start with http: ${m.deepLink}`);
   }
+});
+
+// ─── AI Import: buildImportPayload ───────────────────────────────────────────
+
+console.log('\nAI Import — buildImportPayload');
+
+test('buildImportPayload: model is claude-sonnet-4-20250514', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'some text');
+  assertEqual(p.model, 'claude-sonnet-4-20250514');
+});
+
+test('buildImportPayload: max_tokens is 4096', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'some text');
+  assertEqual(p.max_tokens, 4096);
+});
+
+test('buildImportPayload: messages is array with one entry', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'some text');
+  assert(Array.isArray(p.messages) && p.messages.length === 1);
+});
+
+test('buildImportPayload: message role is user', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'some text');
+  assertEqual(p.messages[0].role, 'user');
+});
+
+test('buildImportPayload: prompt includes programId', () => {
+  const p = buildImportPayload('shopback', 'ShopBack', 'some text');
+  assert(p.messages[0].content.includes('shopback'), 'Prompt should contain programId');
+});
+
+test('buildImportPayload: prompt includes programName', () => {
+  const p = buildImportPayload('shopback', 'ShopBack', 'some text');
+  assert(p.messages[0].content.includes('ShopBack'), 'Prompt should contain programName');
+});
+
+test('buildImportPayload: prompt includes rawText', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'Get 10% off at NRMA shops');
+  assert(p.messages[0].content.includes('Get 10% off at NRMA shops'), 'Prompt should contain rawText');
+});
+
+// ─── AI Import: parseExtractedMerchants ──────────────────────────────────────
+
+console.log('\nAI Import — parseExtractedMerchants');
+
+const VALID_MERCHANT_NO_ADDEDAT = {
+  id: 'test-store-nrma',
+  name: 'Test Store',
+  program: 'nrma',
+  category: 'General Retail',
+  discount: '10% off everything',
+  description: 'Test Store is a fictional retailer used in unit tests. NRMA members receive 10% off all purchases.',
+  deepLink: '',
+};
+
+test('parseExtractedMerchants: valid JSON array returns merchants', () => {
+  const content = JSON.stringify([VALID_MERCHANT_NO_ADDEDAT]);
+  const { merchants } = parseExtractedMerchants(content, 'nrma');
+  assertEqual(merchants.length, 1);
+});
+
+test('parseExtractedMerchants: forces program field to programId', () => {
+  const wrongProgram = Object.assign({}, VALID_MERCHANT_NO_ADDEDAT, { program: 'wrong_id' });
+  const content = JSON.stringify([wrongProgram]);
+  const { merchants } = parseExtractedMerchants(content, 'nrma');
+  assertEqual(merchants[0].program, 'nrma');
+});
+
+test('parseExtractedMerchants: stamps addedAt as ISO 8601 string', () => {
+  const content = JSON.stringify([VALID_MERCHANT_NO_ADDEDAT]);
+  const { merchants } = parseExtractedMerchants(content, 'nrma');
+  assert(typeof merchants[0].addedAt === 'string' && merchants[0].addedAt.includes('T'), 'addedAt should be ISO 8601');
+});
+
+test('parseExtractedMerchants: strips leading ```json fence', () => {
+  const content = '```json\n' + JSON.stringify([VALID_MERCHANT_NO_ADDEDAT]) + '\n```';
+  const { merchants } = parseExtractedMerchants(content, 'nrma');
+  assertEqual(merchants.length, 1);
+});
+
+test('parseExtractedMerchants: strips leading ``` fence (no lang tag)', () => {
+  const content = '```\n' + JSON.stringify([VALID_MERCHANT_NO_ADDEDAT]) + '\n```';
+  const { merchants } = parseExtractedMerchants(content, 'nrma');
+  assertEqual(merchants.length, 1);
+});
+
+test('parseExtractedMerchants: skips merchants with missing required fields', () => {
+  const incomplete = { name: 'No ID', program: 'nrma', category: 'Retail' };
+  const content = JSON.stringify([VALID_MERCHANT_NO_ADDEDAT, incomplete]);
+  const { merchants, skipped } = parseExtractedMerchants(content, 'nrma');
+  assertEqual(merchants.length, 1);
+  assertEqual(skipped, 1);
+});
+
+test('parseExtractedMerchants: all invalid → merchants empty, skipped > 0', () => {
+  const incomplete = { name: 'Oops' };
+  const content = JSON.stringify([incomplete]);
+  const { merchants, skipped } = parseExtractedMerchants(content, 'nrma');
+  assertEqual(merchants.length, 0);
+  assertEqual(skipped, 1);
+});
+
+test('parseExtractedMerchants: throws on invalid JSON', () => {
+  let threw = false;
+  try { parseExtractedMerchants('not json at all', 'nrma'); } catch (e) { threw = true; }
+  assert(threw, 'Should throw on invalid JSON');
+});
+
+test('parseExtractedMerchants: throws when response is not an array', () => {
+  let threw = false;
+  try { parseExtractedMerchants('{"foo":"bar"}', 'nrma'); } catch (e) { threw = true; }
+  assert(threw, 'Should throw when response is an object not an array');
 });
 
 // ─── summary ─────────────────────────────────────────────────────────────────

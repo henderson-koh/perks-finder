@@ -201,6 +201,15 @@ The Claude API model for AI import (Phase 4) is `claude-sonnet-4-20250514`.
 
 ## Progress
 
+### Phase 4 — 2026-05-30
+- **Completed:** AI Import modal (program select + paste → Extract with AI → preview → Confirm & Merge), Export Backup, Import Backup, `buildImportPayload` + `parseExtractedMerchants` in data.js, SW cache bumped to `perks-v2` (SW staleness hotfix), 16 new tests (91 total)
+- **Key decisions:**
+  - `buildImportPayload` and `parseExtractedMerchants` are pure functions in `data.js` (not the app script) so the full AI pipeline is testable in Node.js without mocking `fetch`.
+  - `parseExtractedMerchants` stamps `addedAt` and forces `program` itself (via `Object.assign`) — does not trust Claude to supply them correctly.
+  - Direct browser API call using `anthropic-dangerous-direct-browser-calls: true` header — no backend proxy needed, app stays fully static.
+  - Bottom-sheet modal (slides up from bottom) matches Android native UX on the target device.
+  - SW cache name bumped `perks-v1` → `perks-v2` to force browsers to re-fetch updated `data.js` after Phase 3 deploy.
+
 ### Phase 3 — 2026-05-30
 - **Completed:** Fuzzy search (Fuse.js v7.3.0 inline), category browse with drill-down, deep link navigation, 3 new data.js helpers, 14 new tests (75 total)
 - **Key decisions:**

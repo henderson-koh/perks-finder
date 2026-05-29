@@ -28,3 +28,34 @@
 - **Test runner working directory**: `node test.js` must be run from the project root (`C:\Users\Henderson\Coding Projects\perks-finder\`) for `fs.readFileSync('./manifest.json', ...)` to resolve correctly.
 
 ---
+
+## Session 2 — 2026-05-30
+
+### What was built
+- **Git setup**: initialised repo, configured identity (`hendo` / `henderson.koh@gmail.com`), pushed to `henderson-koh/perks-finder` on GitHub. Added `.gitignore` (excludes `node_modules/`, `fuse_source.txt`, `package-lock.json`).
+- **Phase 3 — Search + Browse** (`data.js`, `index.html`, `test.js`, `generate-index.js`):
+  - Fuzzy search wired to Fuse.js v7.3.0 — real-time results showing program badge, merchant name, discount; deep link navigation on tap; empty and no-results states.
+  - Browse screen replaced with 2-column category grid; tap a category to drill down into a filtered merchant list; back button returns to the grid.
+  - Three new `data.js` helpers: `getAllMerchants()`, `getCategoryList()`, `getMerchantsByCategory()`.
+  - `generate-index.js` utility: splices Fuse.js source into `index.html` at build time so the minified library stays readable in diffs.
+  - 14 new tests (75 total, all passing).
+
+### What worked well
+- Wrapping the Fuse.js CJS build in a simple IIFE (`var Fuse = (function(){ var module={exports:{}}; [source]; return module.exports; })()`) required no changes to the library source.
+- Extracting the three helpers into `data.js` kept all testable logic out of the browser-only app script.
+- Event delegation for cat cards and result items (not inline onclick) keeps the HTML safe against user-controlled data ending up in handler strings.
+- The `generate-index.js` approach cleanly solves the backtick-in-template-literal problem and is reusable if more libraries need inlining in Phase 5.
+
+### What was tricky
+- **Fuse.js v7 dropped the UMD build**: v6.x had `dist/fuse.js` (UMD). v7.x ships only CJS and ESM. The IIFE wrapper was needed; confirmed in Node eval before inlining.
+- **Bash heredoc vs. backticks**: Fuse.js source contains backtick characters that broke bash template literals. Solved with a dedicated `generate-index.js` Node script.
+- **GitHub credential mismatch**: Git was storing credentials for `he-koh` rather than `henderson-koh`. Fixed by embedding the username in the remote URL (`https://henderson-koh@github.com/...`).
+
+### Watch out for in the next session (Phase 4)
+- **Invalidate search index after import**: set `fuseInstance = null` after Phase 4 AI import merges new merchants so the next search rebuilds with fresh data.
+- **AI import model**: use `claude-sonnet-4-20250514` (specified in CLAUDE.md). Do not substitute a different model ID.
+- **Prompt design**: the extraction prompt needs the full merchant schema and target program ID so the model fills `program` correctly. Return a JSON array of merchant objects.
+- **Preview before merge**: show extracted merchants before committing — let the user cancel. `importFromJson` merge logic is already tested.
+- **Test runner working directory**: `node test.js` must be run from the project root.
+
+---

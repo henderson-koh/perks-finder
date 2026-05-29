@@ -27,6 +27,9 @@ const {
   loadApiKey,
   saveApiKey,
   clearApiKey,
+  getAllMerchants,
+  getCategoryList,
+  getMerchantsByCategory,
 } = require('./data.js');
 
 // ─── test runner ────────────────────────────────────────────────────────────
@@ -541,6 +544,113 @@ test('saveApiKey + loadApiKey: survives round-trip unchanged', () => {
   const key = 'sk-ant-api99-longkeyvalue1234567890';
   saveApiKey(key);
   assertEqual(loadApiKey(), key);
+});
+
+// ─── search and browse helpers ───────────────────────────────────────────────
+
+console.log('\nSearch and browse helpers');
+
+test('getAllMerchants: returns empty array when no data in storage', () => {
+  assert(Array.isArray(getAllMerchants()) && getAllMerchants().length === 0);
+});
+
+test('getAllMerchants: returns 65 merchants after seed', () => {
+  preseedIfEmpty();
+  assertEqual(getAllMerchants().length, 65);
+});
+
+test('getAllMerchants: each item has a non-empty programName string', () => {
+  preseedIfEmpty();
+  for (const m of getAllMerchants()) {
+    assert(typeof m.programName === 'string' && m.programName.length > 0, `Missing programName on ${m.id}`);
+  }
+});
+
+test('getAllMerchants: programName matches the parent program display name', () => {
+  preseedIfEmpty();
+  const data = loadData();
+  for (const [progId, prog] of Object.entries(data.programs)) {
+    for (const m of getAllMerchants().filter(m => m.program === progId)) {
+      assertEqual(m.programName, prog.name, `programName mismatch for ${m.id}`);
+    }
+  }
+});
+
+test('getAllMerchants: does not mutate stored merchant objects', () => {
+  preseedIfEmpty();
+  const stored = loadData().programs.rewardgateway.merchants[0];
+  assert(!('programName' in stored), 'stored merchant should not have programName');
+});
+
+test('getCategoryList: returns empty array when no data', () => {
+  const result = getCategoryList();
+  assert(Array.isArray(result) && result.length === 0);
+});
+
+test('getCategoryList: returns non-empty array after seed', () => {
+  preseedIfEmpty();
+  assert(getCategoryList().length > 0);
+});
+
+test('getCategoryList: categories are sorted alphabetically', () => {
+  preseedIfEmpty();
+  const cats = getCategoryList();
+  for (let i = 0; i < cats.length - 1; i++) {
+    assert(cats[i] <= cats[i + 1], `Not sorted: "${cats[i]}" > "${cats[i + 1]}"`);
+  }
+});
+
+test('getCategoryList: no duplicate categories', () => {
+  preseedIfEmpty();
+  const cats = getCategoryList();
+  assertEqual(cats.length, new Set(cats).size, 'Duplicate categories found');
+});
+
+test('getMerchantsByCategory: returns empty array for unknown category', () => {
+  preseedIfEmpty();
+  const result = getMerchantsByCategory('__nonexistent__');
+  assert(Array.isArray(result) && result.length === 0);
+});
+
+test('getMerchantsByCategory: returns only merchants matching the category', () => {
+  preseedIfEmpty();
+  const cat = getCategoryList()[0];
+  const result = getMerchantsByCategory(cat);
+  assert(result.length > 0, `Expected merchants in category "${cat}"`);
+  for (const m of result) {
+    assertEqual(m.category, cat, `Merchant ${m.id} has wrong category`);
+  }
+});
+
+test('getMerchantsByCategory: returned merchants have programName field', () => {
+  preseedIfEmpty();
+  const cat = getCategoryList()[0];
+  for (const m of getMerchantsByCategory(cat)) {
+    assert(typeof m.programName === 'string' && m.programName.length > 0, `Missing programName on ${m.id}`);
+  }
+});
+
+test('deep link: all seeded merchant deepLink fields are strings', () => {
+  preseedIfEmpty();
+  for (const m of getAllMerchants()) {
+    assert(typeof m.deepLink === 'string', `deepLink on ${m.id} is not a string`);
+  }
+});
+
+test('deep link: non-empty deepLinks start with http', () => {
+  preseedIfEmpty();
+  const data = loadData();
+  data.programs.rewardgateway.merchants.push({
+    id: 'test-deeplink', name: 'Test Store', program: 'rewardgateway', category: 'Test',
+    discount: '5% off', description: 'A test merchant added to verify that non-empty deep link fields start with http.',
+    deepLink: 'https://example.com/perks', addedAt: '2024-01-01T00:00:00.000Z',
+  });
+  saveData(data);
+  const withLinks = getAllMerchants().filter(m => m.deepLink !== '');
+  assert(withLinks.length > 0, 'Expected at least one merchant with a deepLink');
+  for (const m of withLinks) {
+    assert(m.deepLink.startsWith('http'), `deepLink should start with http: ${m.deepLink}`);
+  }
 });
 
 // ─── summary ─────────────────────────────────────────────────────────────────

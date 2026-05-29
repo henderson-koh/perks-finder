@@ -817,6 +817,27 @@ function preseedIfEmpty() {
   return true;
 }
 
+function getAllMerchants() {
+  const data = loadData();
+  if (!data) return [];
+  const results = [];
+  for (const prog of Object.values(data.programs)) {
+    for (const m of prog.merchants) {
+      results.push(Object.assign({}, m, { programName: prog.name }));
+    }
+  }
+  return results;
+}
+
+function getCategoryList() {
+  const cats = new Set(getAllMerchants().map(m => m.category).filter(Boolean));
+  return [...cats].sort();
+}
+
+function getMerchantsByCategory(category) {
+  return getAllMerchants().filter(m => m.category === category);
+}
+
 function loadApiKey() {
   return localStorage.getItem('perks_api_key') || '';
 }
@@ -847,5 +868,8 @@ if (typeof module !== 'undefined' && module.exports) {
     loadApiKey,
     saveApiKey,
     clearApiKey,
+    getAllMerchants,
+    getCategoryList,
+    getMerchantsByCategory,
   };
 }

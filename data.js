@@ -858,7 +858,7 @@ function buildImportPayload(programId, programName, rawText) {
 
   return {
     model: 'claude-sonnet-4-6',
-    max_tokens: 16000,
+    max_tokens: 64000,
     messages: [{ role: 'user', content: prompt }],
   };
 }

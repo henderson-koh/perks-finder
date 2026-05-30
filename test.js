@@ -664,9 +664,9 @@ test('buildImportPayload: model is claude-sonnet-4-6', () => {
   assertEqual(p.model, 'claude-sonnet-4-6');
 });
 
-test('buildImportPayload: max_tokens is 16000', () => {
+test('buildImportPayload: max_tokens is 64000', () => {
   const p = buildImportPayload('nrma', 'NRMA', 'some text');
-  assertEqual(p.max_tokens, 16000);
+  assertEqual(p.max_tokens, 64000);
 });
 
 test('buildImportPayload: messages is array with one entry', () => {

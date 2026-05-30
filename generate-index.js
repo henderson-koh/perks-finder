@@ -1007,7 +1007,7 @@ document.getElementById('modal-extract-btn').addEventListener('click', async fun
         'Content-Type':                          'application/json',
         'x-api-key':                             apiKey,
         'anthropic-version':                     '2023-06-01',
-        'anthropic-dangerous-direct-browser-calls': 'true',
+        'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify(payload),
     });

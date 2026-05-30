@@ -92,3 +92,39 @@
 - **Test runner**: run node test.js from the project root.
 
 ---
+
+## Session 4 — 2026-05-31
+
+### What was built / fixed
+Post-deploy debugging of Phase 4 AI Import on the live GitHub Pages site. No new features — all fixes were to make the already-built Phase 4 work correctly in production.
+
+- **CORS fix**: Wrong header name in the AI import fetch call. Code had `anthropic-dangerous-direct-browser-calls` but the correct Anthropic header is `anthropic-dangerous-direct-browser-access`. Fixed in both `generate-index.js` (template) and `index.html` (built output).
+- **SW cache bump**: Fixing the header name required redeploying `index.html`, but the SW was still serving the stale cached version. Bumped CACHE from `perks-v2` to `perks-v3` in `sw.js` to force browsers to fetch fresh assets.
+- **Model deprecation fix**: `claude-sonnet-4-20250514` is already returning not_found errors (retirement date June 15 2026, but effectively unavailable now). Updated to `claude-sonnet-4-6` across `data.js`, `test.js`, `generate-index.js`, `index.html`, `CLAUDE.md`, and `retro-notes.md`.
+- **max_tokens bump**: 4096 was too small for the NRMA portal (hundreds of merchants) — response was truncated mid-JSON, breaking parse. Bumped to 64000 (model maximum). Tests updated to assert 64000.
+- All 91 tests passing throughout.
+
+### What worked well
+- Verifying the correct CORS header by fetching the raw Anthropic TypeScript SDK source from GitHub — authoritative, fast.
+- The SW cache versioning pattern (bump CACHE name → old caches deleted on activate) worked exactly as designed.
+- Splitting fixes into small commits made it easy to track which change fixed which error.
+
+### What was tricky
+- **Non-streaming hang for large portals**: Setting max_tokens=64000 and asking for verbose descriptions on a large NRMA paste (hundreds of merchants) causes the API to generate thousands of tokens before sending a single byte back. Chrome's Network tab showed "stalled — request not finished" indefinitely. Root cause: non-streaming fetch means zero TTFB until full response is ready; verbose descriptions multiply output tokens.
+- **Identifying the CORS header name**: The header name isn't prominently documented — had to dig into the SDK source to confirm the correct spelling.
+- **SW cache and incognito**: Even in a fresh incognito window, the installed SW serves cached assets. "Bypass for network" in DevTools → Application → Service Workers was needed to test fixes before the CDN propagated.
+
+### Pending decision for next session
+AI import works fine for small pastes (~4–50 merchants, completes in <10s). For large portals (NRMA, hundreds of merchants) the non-streaming approach hangs.
+
+**Two options discussed — decision deferred:**
+1. **Streaming** (proper fix): swap `fetch` for SSE-style streaming response reading; show live merchant count during extraction; eliminates the hang entirely. More code, but the right long-term solution.
+2. **Drop verbose descriptions from the extraction prompt** (quick win): cuts output tokens ~60%, makes large-portal imports viable in one shot. Trade-off: description fields will be empty or minimal until the user re-imports with enrichment.
+
+Next session: pick one of these and implement it before moving to Phase 5.
+
+### Watch out for next session
+- SW cache is currently `perks-v3`. Any breaking change to `index.html`, `data.js`, or `sw.js` will require bumping to `perks-v4`.
+- If choosing streaming: the `finally` block that resets the button still applies — just needs to fire after the stream closes, not after a single `await response.json()`.
+
+---

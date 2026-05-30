@@ -124,7 +124,7 @@ v2 will add a Claude-powered chat interface. The user can ask questions like "I 
 ### Phase 4 — AI Import
 - [ ] Manage screen: view/edit raw JSON, "Import with AI" button
 - [ ] Modal: select which program to import into
-- [ ] User pastes raw text from benefits portal → app calls `claude-sonnet-4-20250514` → extracted merchants preview → merge on confirm
+- [ ] User pastes raw text from benefits portal → app calls `claude-sonnet-4-6` → extracted merchants preview → merge on confirm
 - [ ] `test.js` tests: API call structure, response parsing, merge logic, error states
 
 ### Phase 5 — Polish + Install Guide
@@ -195,7 +195,7 @@ global.localStorage = {
 
 The Fuse.js library must be copied from its npm package source and pasted inline in `index.html` — do not use a CDN `<script src>` tag.
 
-The Claude API model for AI import (Phase 4) is `claude-sonnet-4-20250514`.
+The Claude API model for AI import (Phase 4) is `claude-sonnet-4-6`.
 
 ---
 

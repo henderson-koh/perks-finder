@@ -53,7 +53,7 @@
 
 ### Watch out for in the next session (Phase 4)
 - **Invalidate search index after import**: set `fuseInstance = null` after Phase 4 AI import merges new merchants so the next search rebuilds with fresh data.
-- **AI import model**: use `claude-sonnet-4-20250514` (specified in CLAUDE.md). Do not substitute a different model ID.
+- **AI import model**: use `claude-sonnet-4-6` (specified in CLAUDE.md). Do not substitute a different model ID.
 - **Prompt design**: the extraction prompt needs the full merchant schema and target program ID so the model fills `program` correctly. Return a JSON array of merchant objects.
 - **Preview before merge**: show extracted merchants before committing — let the user cancel. `importFromJson` merge logic is already tested.
 - **Test runner working directory**: `node test.js` must be run from the project root.

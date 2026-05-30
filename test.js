@@ -659,9 +659,9 @@ test('deep link: non-empty deepLinks start with http', () => {
 
 console.log('\nAI Import — buildImportPayload');
 
-test('buildImportPayload: model is claude-sonnet-4-20250514', () => {
+test('buildImportPayload: model is claude-sonnet-4-6', () => {
   const p = buildImportPayload('nrma', 'NRMA', 'some text');
-  assertEqual(p.model, 'claude-sonnet-4-20250514');
+  assertEqual(p.model, 'claude-sonnet-4-6');
 });
 
 test('buildImportPayload: max_tokens is 4096', () => {

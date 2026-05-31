@@ -224,16 +224,7 @@ v2 will add a Claude-powered chat interface. The user can ask questions like "I 
 ### Phase 3 — Search + Browse ✅
 ### Phase 4 — AI Import ✅
 
-### Phase 5 — Import Fixes + Programs Screen
-- [ ] Remove 3 inactive programs from schema: `bankwest`, `shopback`, `jbhifi_perks`
-- [ ] Rewrite `buildImportPayload` with per-program prompt variants (see Per-Program AI Import Prompt Variants above)
-- [ ] Add merge mode checkbox to AI import modal ("Replace existing" / "Add to existing")
-- [ ] Replace Browse tab + Manage tab with single Programs tab
-- [ ] Programs screen: card per program with merchant count, last updated date, Import button
-- [ ] Export Backup + Import Backup moved to Programs screen footer
-- [ ] SW cache bumped to `perks-v5`
-- [ ] All existing tests updated, new tests added for per-program prompt variants and merge mode
-- [ ] Rebuild `index.html` via `generate-index.js`
+### Phase 5 — Import Fixes + Programs Screen ✅
 
 ### Phase 6 — Polish + Install Guide
 - [ ] Loading states, error handling, empty states throughout
@@ -318,9 +309,17 @@ The Claude API model for AI import is `claude-sonnet-4-6`. Do not substitute a d
   - Bottom-sheet modal (slides up from bottom) matches Android native UX on the target device.
   - SW cache name bumped `perks-v1` → `perks-v2` to force browsers to re-fetch updated `data.js` after Phase 3 deploy.
 
+### Phase 5 — 2026-05-31
+- **Completed:** Schema trimmed to 10 programs (removed bankwest, shopback, jbhifi_perks), `buildImportPayload` rewritten with 8 per-program prompt variants (fixed merchant ID slug bug), merge mode checkbox added to AI import modal, Browse + Manage tabs replaced by single Programs screen (10 program cards with count + last-updated + Import/Manual-entry), Export/Import Backup moved to Programs screen footer, SW cache bumped to `perks-v5`, `generate-index.js` rewritten as in-place patcher, 101 tests (10 new)
+- **Key decisions:**
+  - Per-program prompts are extract-only (no generated descriptions for most programs) — resolves the production non-streaming hang from large NRMA/RewardGateway pastes.
+  - `generate-index.js` rewritten as an in-place patcher (reads index.html, replaces Fuse.js IIFE, writes back) rather than a hardcoded template that drifts out of sync.
+  - `PROGRAMS` constant is the single source of truth for `renderPrograms()` — adding/removing a program automatically updates the Programs screen.
+  - Merge mode checkbox default is set via `loadData()` at change-event time — Replace if program is empty, Add if it has data.
+
 ### Post-Phase 4 production fixes — 2026-05-31
 - **Fixed:** CORS header corrected (`anthropic-dangerous-direct-browser-calls` → `anthropic-dangerous-direct-browser-access`), SW cache bumped to `perks-v3`, model updated to `claude-sonnet-4-6` (replacing deprecated `claude-sonnet-4-20250514`), `max_tokens` bumped to 64000.
-- **Identified:** non-streaming hang for large portal pastes (hundreds of merchants) — root cause is zero TTFB until full response ready. To be resolved in Phase 5 via per-program prompt variants that eliminate description generation and reduce output tokens.
+- **Identified:** non-streaming hang for large portal pastes (hundreds of merchants) — root cause is zero TTFB until full response ready. Resolved in Phase 5 via per-program prompt variants that eliminate description generation and reduce output tokens.
 
 ### Phase 3 — 2026-05-30
 - **Completed:** Fuzzy search (Fuse.js v7.3.0 inline), category browse with drill-down, deep link navigation, 3 new data.js helpers, 14 new tests (75 total)

@@ -128,3 +128,36 @@ Next session: pick one of these and implement it before moving to Phase 5.
 - If choosing streaming: the `finally` block that resets the button still applies — just needs to fire after the stream closes, not after a single `await response.json()`.
 
 ---
+
+## Session 5 — 2026-05-31
+
+### What was built
+**Phase 5 — Import Fixes + Programs Screen** (all steps completed in one session):
+
+1. **Schema cleanup**: Removed `bankwest`, `shopback`, `jbhifi_perks` from `PROGRAMS` and deleted their 15 seed merchants (5 each). Schema is now 10 programs matching the real programs in use.
+2. **Per-program AI import prompts**: Rewrote `buildImportPayload` from a single generic prompt into a `switch` on `programId` with 8 tailored cases (nrma, rewardgateway, bupa, qantas_shopping, westpac_altitude, everyday_rewards, velocity_ff, velocity_shopping) plus a generic fallback. Each case describes the exact paste format for that portal and gives field-specific rules (e.g. NRMA: calculate % from two prices; Everyday Rewards: skip transfer partners; Bupa: handle three sub-formats). Also fixed a bug in the old prompt — it was showing `woolworths-programId` as an example slug, which would have made Claude include the program name in the ID.
+3. **Merge mode checkbox**: Added "Replace existing data for this program" checkbox to the AI import modal. Auto-defaults to checked (Replace) when the selected program has no data, unchecked (Add) when it already has merchants. Preview summary and post-confirm flash both reflect the chosen mode.
+4. **Programs screen**: Replaced the Browse tab + Manage tab with a single Programs tab. Each of the 10 programs gets a card showing name, merchant count, and "Last updated X ago" / "No data yet". Cards for the 8 importable programs have an Import button that opens the modal pre-selected; Qantas Money and CommBank Yello show "Manual entry". Export/Import Backup moved to a footer below the cards. API key card stays in the Programs screen. `openImportModal` extended to accept an optional `preselectedProgramId`.
+5. **SW cache**: Bumped `perks-v3` → `perks-v5` (skipped v4 — v4 wasn't deployed).
+6. **`generate-index.js` rewrite**: The old script was a hardcoded Phase 3 template — running it would have blown away all Phase 5 changes. Rewrote it as an in-place patcher: reads the current `index.html`, locates the Fuse.js IIFE, replaces it with the npm source, writes back. No more template drift.
+7. **Tests**: 10 new tests for per-program prompt variants (one per program checking for the most distinctive instruction). Merge mode DOM behavior (checkbox show/hide, defaults) is not unit-testable in Node.js; the underlying replace-vs-merge data logic is covered by existing `mergeData` tests. 101 tests passing.
+
+### What worked well
+- The per-program prompt approach cleanly resolved the production hang issue from Session 4 (large pastes causing zero TTFB): by removing the verbose `description` generation requirement from most programs and giving extract-only instructions, output tokens are dramatically reduced.
+- Rewriting `generate-index.js` as an in-place patcher rather than a template was the right call — the old approach required keeping a duplicate copy of the full HTML in sync, which was already badly out of date.
+- The `PROGRAMS` constant in `data.js` being iterated by `renderPrograms()` means the program list is a single source of truth — adding or removing a program automatically updates the Programs screen.
+- `openImportModal(preselectedProgramId)` + `sel.dispatchEvent(new Event('change'))` meant the program select change handler (which sets the checkbox default) runs correctly whether the user picks a program manually or the modal opens pre-selected from a card.
+
+### What was tricky
+- **Merchant ID slug bug in old prompt**: The old generic prompt showed `"woolworths-' + programId + '"` as an example ID, which would have trained Claude to include the program name in the slug. This breaks cross-program deduplication and the consistent ID guarantee. Fixed in the new per-program prompts with an explicit "Never include the program name" rule.
+- **`refreshManageStats` call sites**: The function was called from 4 places (nav click, backup import, AI import confirm, init). Easy to update with `replace_all`, but worth noting the confirm handler inside the modal also needed updating — and `renderPrograms()` needs to be called after any data change, not just on nav switch.
+- **`generate-index.js` was a landmine**: It was sitting in the repo looking like a useful utility, but running it would have silently reverted to Phase 3 code. The fix was straightforward but discovering the risk before running it was important.
+
+### Watch out for next session (Phase 6)
+- **SW cache**: currently `perks-v5`. Any breaking change to `index.html`, `data.js`, or `sw.js` requires bumping to `perks-v6`.
+- **`index.html` will need a JS module refactor before v2**: the app script is now ~300 lines of inline JS. For v2 (Claude-powered chat), this will need splitting into modules. Note this in Phase 6 retro as planned.
+- **Merge mode defaults rely on `loadData()` at checkbox init time**: if the user's localStorage is empty at open time but they've imported data in the same session (without a page reload), the default could be stale. This is an edge case but worth noting.
+- **Programs screen `renderPrograms()` is called at init**: this means it runs on page load even though the Programs tab isn't visible. Cheap call (just innerHTML), but if it becomes expensive, consider lazy-rendering on first tab switch instead.
+- **Manual-entry programs (Qantas Money, CommBank Yello)**: these show "Manual entry" on the Programs screen but there's no actual UI for manual entry yet. Phase 6 could add a simple "Add merchant" form, or leave them as import-only and document the workaround (use Import Backup to add hand-crafted JSON).
+
+---

@@ -848,6 +848,14 @@ function clearApiKey() {
   localStorage.removeItem('perks_api_key');
 }
 
+function isInstallBannerDismissed() {
+  return localStorage.getItem('perks_install_dismissed') === '1';
+}
+
+function dismissInstallBanner() {
+  localStorage.setItem('perks_install_dismissed', '1');
+}
+
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     PROGRAMS,
@@ -866,6 +874,8 @@ if (typeof module !== 'undefined' && module.exports) {
     loadApiKey,
     saveApiKey,
     clearApiKey,
+    isInstallBannerDismissed,
+    dismissInstallBanner,
     getAllMerchants,
     getCategoryList,
     getMerchantsByCategory,

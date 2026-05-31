@@ -477,6 +477,46 @@
       background: var(--surface2);
       color: var(--text2);
     }
+
+    /* ── Spinner ──────────────────────────────────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: -2px;
+      margin-right: 6px;
+    }
+
+    /* ── Install banner ───────────────────────────────────────────────── */
+    .install-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 16px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      border-bottom: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+
+    .install-banner-body  { flex: 1; min-width: 0; }
+    .install-banner-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .install-banner-hint  { font-size: 13px; color: var(--text2); line-height: 1.4; }
+
+    .install-banner-dismiss {
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      padding: 0 2px;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
   </style>
 </head>
 <body>
@@ -489,6 +529,13 @@
         <input id="search-input" type="search"
                placeholder="Search merchants, categories…"
                autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div id="install-banner" class="install-banner" style="display:none" role="status" aria-live="polite">
+        <div class="install-banner-body">
+          <div class="install-banner-title">Add to Home Screen</div>
+          <div class="install-banner-hint">Tap the Chrome menu <strong>&#x22EE;</strong> &rarr; <strong>Add to Home screen</strong> to install Perks Finder on your Android home screen.</div>
+        </div>
+        <button id="install-banner-dismiss" class="install-banner-dismiss" aria-label="Dismiss">&#x2715;</button>
       </div>
       <div id="search-results"></div>
       <div id="search-empty" class="empty-state">
@@ -886,9 +933,9 @@ document.getElementById('modal-extract-btn').addEventListener('click', async fun
   selectedProgramName = sel.options[sel.selectedIndex].text;
 
   const btn = this;
-  btn.disabled    = true;
-  btn.textContent = 'Extracting…';
-  statusEl.textContent = '';
+  btn.disabled  = true;
+  btn.innerHTML = '<span class="spinner"></span>Extracting…';
+  statusEl.textContent = 'This may take 10–30 seconds…';
   statusEl.className   = 'status-msg';
 
   try {
@@ -906,7 +953,17 @@ document.getElementById('modal-extract-btn').addEventListener('click', async fun
 
     if (!response.ok) {
       const errBody = await response.json().catch(() => ({}));
-      throw new Error((errBody.error && errBody.error.message) || 'API error ' + response.status);
+      let msg;
+      if (response.status === 401) {
+        msg = 'Invalid API key — check your key in the Settings section.';
+      } else if (response.status === 429) {
+        msg = 'Rate limit reached — wait a moment and try again.';
+      } else if (response.status >= 500) {
+        msg = 'Anthropic API error (' + response.status + ') — try again shortly.';
+      } else {
+        msg = (errBody.error && errBody.error.message) || 'API error ' + response.status;
+      }
+      throw new Error(msg);
     }
 
     const result  = await response.json();
@@ -923,10 +980,17 @@ document.getElementById('modal-extract-btn').addEventListener('click', async fun
     renderPreview(merchants, skipped);
     showModalStep('preview');
   } catch (e) {
-    flash(statusEl, 'Error: ' + e.message, 'err');
+    const msg = e instanceof TypeError
+      ? 'Network error — check your connection and try again.'
+      : 'Error: ' + e.message;
+    flash(statusEl, msg, 'err');
   } finally {
-    btn.disabled    = false;
-    btn.textContent = 'Extract with AI';
+    btn.disabled  = false;
+    btn.innerHTML = 'Extract with AI';
+    if (!statusEl.className.includes('err') && !statusEl.className.includes('ok')) {
+      statusEl.textContent = '';
+      statusEl.className   = 'status-msg';
+    }
   }
 });
 
@@ -987,6 +1051,17 @@ document.getElementById('modal-confirm-btn').addEventListener('click', function(
     count + ' merchant' + (count !== 1 ? 's' : '') + ' ' + actionWord + ' ' + selectedProgramName + '.',
     'ok'
   );
+
+  const total = getAllMerchants().length;
+  if (total >= 10 && !sessionStorage.getItem('perks_backup_reminded')) {
+    sessionStorage.setItem('perks_backup_reminded', '1');
+    setTimeout(() => {
+      const el = document.getElementById('ai-import-status');
+      if (!el.textContent) {
+        flash(el, 'You have ' + total + ' merchants — tap Export Backup below to save a copy.', 'ok');
+      }
+    }, 3200);
+  }
 });
 
 document.getElementById('modal-back-btn').addEventListener('click', function() {
@@ -998,10 +1073,23 @@ function esc(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Install banner ────────────────────────────────────────────────────────
+function initInstallBanner() {
+  if (window.matchMedia('(display-mode: standalone)').matches) return;
+  if (isInstallBannerDismissed()) return;
+  document.getElementById('install-banner').style.display = '';
+}
+
+document.getElementById('install-banner-dismiss').addEventListener('click', function() {
+  dismissInstallBanner();
+  document.getElementById('install-banner').style.display = 'none';
+});
+
 // ── Init ──────────────────────────────────────────────────────────────────
 preseedIfEmpty();
 renderPrograms();
 refreshKeyIndicator();
+initInstallBanner();
 
 // ── Service worker ────────────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {

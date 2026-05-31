@@ -27,6 +27,8 @@ const {
   loadApiKey,
   saveApiKey,
   clearApiKey,
+  isInstallBannerDismissed,
+  dismissInstallBanner,
   getAllMerchants,
   getCategoryList,
   getMerchantsByCategory,
@@ -822,6 +824,30 @@ test('parseExtractedMerchants: throws when response is not an array', () => {
   let threw = false;
   try { parseExtractedMerchants('{"foo":"bar"}', 'nrma'); } catch (e) { threw = true; }
   assert(threw, 'Should throw when response is an object not an array');
+});
+
+// ─── Install banner state ────────────────────────────────────────────────────
+
+console.log('\nInstall banner state');
+
+test('isInstallBannerDismissed: returns false when not dismissed', () => {
+  assert(!isInstallBannerDismissed(), 'Should be false before any dismissal');
+});
+
+test('dismissInstallBanner: sets the localStorage key', () => {
+  dismissInstallBanner();
+  assertEqual(localStorage.getItem('perks_install_dismissed'), '1');
+});
+
+test('isInstallBannerDismissed: returns true after dismissInstallBanner', () => {
+  dismissInstallBanner();
+  assert(isInstallBannerDismissed(), 'Should be true after dismissal');
+});
+
+test('isInstallBannerDismissed: returns false after localStorage.clear', () => {
+  dismissInstallBanner();
+  localStorage.clear();
+  assert(!isInstallBannerDismissed(), 'Should be false after clear');
 });
 
 // ─── summary ─────────────────────────────────────────────────────────────────

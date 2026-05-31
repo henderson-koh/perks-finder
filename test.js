@@ -123,8 +123,8 @@ test('validateData: program with invalid merchant fails', () => {
   assert(!validateData(d));
 });
 
-test('createEmptyData: has exactly 13 programs', () => {
-  assertEqual(Object.keys(createEmptyData().programs).length, 13);
+test('createEmptyData: has exactly 10 programs', () => {
+  assertEqual(Object.keys(createEmptyData().programs).length, 10);
 });
 
 test('createEmptyData: all programs have empty merchants arrays', () => {
@@ -137,8 +137,8 @@ test('createEmptyData: all expected program ids are present', () => {
   const ids = Object.keys(createEmptyData().programs);
   const expected = [
     'rewardgateway','nrma','bupa','qantas_shopping','qantas_money',
-    'bankwest','westpac_altitude','commbank_yello','everyday_rewards',
-    'shopback','jbhifi_perks','velocity_ff','velocity_shopping',
+    'westpac_altitude','commbank_yello','everyday_rewards',
+    'velocity_ff','velocity_shopping',
   ];
   for (const id of expected) {
     assert(ids.includes(id), `Missing program id: ${id}`);
@@ -158,9 +158,9 @@ test('preseedIfEmpty: data is saved to localStorage after seed', () => {
   assert(loadData() !== null);
 });
 
-test('preseedIfEmpty: all 13 programs present after seed', () => {
+test('preseedIfEmpty: all 10 programs present after seed', () => {
   preseedIfEmpty();
-  assertEqual(Object.keys(loadData().programs).length, 13);
+  assertEqual(Object.keys(loadData().programs).length, 10);
 });
 
 test('preseedIfEmpty: each program has exactly 5 merchants', () => {
@@ -251,7 +251,7 @@ test('getExportJson: round-trips without data loss', () => {
 test('getExportJson: returns valid empty structure when localStorage is empty', () => {
   const parsed = JSON.parse(getExportJson());
   assert(validateData(parsed));
-  assertEqual(Object.keys(parsed.programs).length, 13);
+  assertEqual(Object.keys(parsed.programs).length, 10);
 });
 
 // ─── import ──────────────────────────────────────────────────────────────────
@@ -556,9 +556,9 @@ test('getAllMerchants: returns empty array when no data in storage', () => {
   assert(Array.isArray(getAllMerchants()) && getAllMerchants().length === 0);
 });
 
-test('getAllMerchants: returns 65 merchants after seed', () => {
+test('getAllMerchants: returns 50 merchants after seed', () => {
   preseedIfEmpty();
-  assertEqual(getAllMerchants().length, 65);
+  assertEqual(getAllMerchants().length, 50);
 });
 
 test('getAllMerchants: each item has a non-empty programName string', () => {
@@ -680,18 +680,75 @@ test('buildImportPayload: message role is user', () => {
 });
 
 test('buildImportPayload: prompt includes programId', () => {
-  const p = buildImportPayload('shopback', 'ShopBack', 'some text');
-  assert(p.messages[0].content.includes('shopback'), 'Prompt should contain programId');
+  const p = buildImportPayload('rewardgateway', 'Work RewardGateway', 'some text');
+  assert(p.messages[0].content.includes('rewardgateway'), 'Prompt should contain programId');
 });
 
 test('buildImportPayload: prompt includes programName', () => {
-  const p = buildImportPayload('shopback', 'ShopBack', 'some text');
-  assert(p.messages[0].content.includes('ShopBack'), 'Prompt should contain programName');
+  const p = buildImportPayload('rewardgateway', 'Work RewardGateway', 'some text');
+  assert(p.messages[0].content.includes('Work RewardGateway'), 'Prompt should contain programName');
 });
 
 test('buildImportPayload: prompt includes rawText', () => {
   const p = buildImportPayload('nrma', 'NRMA', 'Get 10% off at NRMA shops');
   assert(p.messages[0].content.includes('Get 10% off at NRMA shops'), 'Prompt should contain rawText');
+});
+
+test('buildImportPayload: id slug rule — prompt instructs never to include program name in slug', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'text');
+  assert(p.messages[0].content.includes('Never include the program name'), 'prompt should enforce program-free id slugs');
+});
+
+test('buildImportPayload: nrma — prompt includes discount calculation instruction', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'text');
+  assert(p.messages[0].content.includes('calculate'), 'nrma prompt should include discount calculation');
+});
+
+test('buildImportPayload: nrma — deepLink is empty string', () => {
+  const p = buildImportPayload('nrma', 'NRMA', 'text');
+  assert(p.messages[0].content.includes('empty string (not present'), 'nrma prompt should specify empty deepLink');
+});
+
+test('buildImportPayload: rewardgateway — prompt includes Check offers URL instruction', () => {
+  const p = buildImportPayload('rewardgateway', 'Work RewardGateway', 'text');
+  assert(p.messages[0].content.includes('Check offers'), 'rewardgateway prompt should reference Check offers URL');
+});
+
+test('buildImportPayload: bupa — prompt covers eGift cards, dining, and travel formats', () => {
+  const p = buildImportPayload('bupa', 'Bupa', 'text');
+  const content = p.messages[0].content;
+  assert(content.includes('eGift'), 'bupa prompt should cover eGift format');
+  assert(content.includes('Dining'), 'bupa prompt should cover dining format');
+  assert(content.includes('Travel'), 'bupa prompt should cover travel format');
+});
+
+test('buildImportPayload: qantas_shopping — prompt includes Qantas pts per $1 instruction', () => {
+  const p = buildImportPayload('qantas_shopping', 'Qantas Shopping Portal', 'text');
+  assert(p.messages[0].content.includes('Qantas pts per $1'), 'qantas_shopping prompt should reference points format');
+});
+
+test('buildImportPayload: westpac_altitude — prompt includes cashback and bonus instructions', () => {
+  const p = buildImportPayload('westpac_altitude', 'Westpac Altitude Qantas Black', 'text');
+  const content = p.messages[0].content;
+  assert(content.includes('cashback'), 'westpac_altitude prompt should reference cashback');
+  assert(content.includes('bonus'), 'westpac_altitude prompt should reference bonus cashback');
+});
+
+test('buildImportPayload: everyday_rewards — prompt includes SKIP partners instruction', () => {
+  const p = buildImportPayload('everyday_rewards', 'Everyday Rewards', 'text');
+  const content = p.messages[0].content;
+  assert(content.includes('SKIP'), 'everyday_rewards prompt should include SKIP instruction');
+  assert(content.includes('Westpac'), 'everyday_rewards prompt should name Westpac as a skipped partner');
+});
+
+test('buildImportPayload: velocity_ff — prompt includes one-off instruction', () => {
+  const p = buildImportPayload('velocity_ff', 'Velocity FF', 'text');
+  assert(p.messages[0].content.includes('one-off'), 'velocity_ff prompt should reference one-off grants');
+});
+
+test('buildImportPayload: velocity_shopping — prompt includes Velocity pts per $1 instruction', () => {
+  const p = buildImportPayload('velocity_shopping', 'Velocity Shopping Portal', 'text');
+  assert(p.messages[0].content.includes('Velocity pts per $1'), 'velocity_shopping prompt should reference points format');
 });
 
 // ─── AI Import: parseExtractedMerchants ──────────────────────────────────────

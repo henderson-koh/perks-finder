@@ -6,12 +6,9 @@ const PROGRAMS = {
   bupa:             { id: 'bupa',              name: 'Bupa' },
   qantas_shopping:  { id: 'qantas_shopping',   name: 'Qantas Shopping Portal' },
   qantas_money:     { id: 'qantas_money',      name: 'Qantas FF Card (Qantas Money)' },
-  bankwest:         { id: 'bankwest',           name: 'Bankwest CC (More Rewards)' },
   westpac_altitude: { id: 'westpac_altitude',  name: 'Westpac Altitude Qantas Black' },
   commbank_yello:   { id: 'commbank_yello',    name: 'CommBank CC (Yello)' },
   everyday_rewards: { id: 'everyday_rewards',  name: 'Everyday Rewards' },
-  shopback:         { id: 'shopback',           name: 'ShopBack' },
-  jbhifi_perks:     { id: 'jbhifi_perks',      name: 'JB Hi-Fi Perks' },
   velocity_ff:      { id: 'velocity_ff',        name: 'Velocity FF' },
   velocity_shopping:{ id: 'velocity_shopping',  name: 'Velocity Shopping Portal' },
 };
@@ -284,59 +281,6 @@ const SEED_MERCHANTS = {
     },
   ],
 
-  bankwest: [
-    {
-      id: 'myer-bankwest',
-      name: 'Myer',
-      program: 'bankwest',
-      category: 'Department Store',
-      discount: 'Earn 3x More Rewards points per $1 spent',
-      description: 'Myer is Australia\'s largest department store and a bonus earn partner for Bankwest More Rewards credit cards. Cardholders earn 3 More Rewards points per $1 at Myer stores and myer.com.au, well above the standard earn rate. Points can be redeemed for gift cards, merchandise, or transferred to frequent flyer programs.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'flight-centre-bankwest',
-      name: 'Flight Centre',
-      program: 'bankwest',
-      category: 'Travel',
-      discount: 'Earn bonus More Rewards points on travel bookings',
-      description: 'Flight Centre is Australia\'s largest travel agency chain with stores nationwide and an online booking platform. Bankwest More Rewards cardholders earn bonus points when booking flights, holiday packages, and cruises through Flight Centre, making it one of the more rewarding ways to spend on travel.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'david-jones-bankwest',
-      name: 'David Jones',
-      program: 'bankwest',
-      category: 'Department Store',
-      discount: 'Earn 2x More Rewards points per $1 spent',
-      description: 'David Jones is a premium Australian department store known for high-quality fashion, beauty, homewares, and food. Bankwest More Rewards cardholders earn 2 More Rewards points per $1 spent at David Jones stores and davidjones.com, above the standard base earn rate.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'woolworths-bankwest',
-      name: 'Woolworths',
-      program: 'bankwest',
-      category: 'Grocery',
-      discount: 'Earn More Rewards points on grocery spending',
-      description: 'Woolworths supermarkets are a key everyday spend category for Bankwest More Rewards cardholders. Points are earned at the standard rate on grocery purchases at Woolworths stores and Woolworths Online, helping accumulate More Rewards points through regular weekly shopping.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'ticketek-bankwest',
-      name: 'Ticketek',
-      program: 'bankwest',
-      category: 'Entertainment',
-      discount: 'Earn bonus More Rewards points on event tickets',
-      description: 'Ticketek is Australia\'s leading ticketing company for major concerts, sports events, theatre, and festivals. Bankwest More Rewards cardholders earn bonus points when purchasing Ticketek event tickets, turning entertainment spending into points redeemable for future rewards.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-  ],
-
   westpac_altitude: [
     {
       id: 'qantas-flights-westpac-altitude',
@@ -491,112 +435,6 @@ const SEED_MERCHANTS = {
       category: 'Online Retail',
       discount: 'Earn points on Everyday Market purchases',
       description: "Everyday Market is Woolworths' online marketplace featuring third-party sellers across homewares, beauty, outdoor, electronics, and more. Everyday Rewards members earn points on eligible orders placed through woolworths.com.au, expanding the point-earning opportunity well beyond groceries.",
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-  ],
-
-  shopback: [
-    {
-      id: 'booking-com-shopback',
-      name: 'Booking.com',
-      program: 'shopback',
-      category: 'Travel',
-      discount: 'Up to 8% cashback on hotel bookings',
-      description: 'Booking.com is one of the world\'s largest hotel and accommodation booking platforms. ShopBack members earn up to 8% cashback on hotel bookings made via ShopBack\'s Booking.com link, which can stack on top of Booking.com Genius loyalty discounts. Cashback is earned on the booking amount excluding taxes.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'asos-shopback',
-      name: 'ASOS',
-      program: 'shopback',
-      category: 'Fashion',
-      discount: 'Up to 5% cashback on clothing and accessories',
-      description: 'ASOS is a major international online fashion retailer with a huge range of clothing, shoes, accessories, and beauty products, delivering to Australia. ShopBack members earn up to 5% cashback on ASOS purchases, making it one of the better returns on fashion spending for Australian shoppers.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'kogan-shopback',
-      name: 'Kogan',
-      program: 'shopback',
-      category: 'Electronics',
-      discount: 'Up to 3% cashback on electronics and appliances',
-      description: 'Kogan is an Australian online retailer specialising in electronics, appliances, furniture, and consumer goods. ShopBack members earn up to 3% cashback on Kogan purchases, making it useful when buying TVs, kitchen appliances, smart home devices, or Kogan own-brand products.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'priceline-shopback',
-      name: 'Priceline',
-      program: 'shopback',
-      category: 'Health & Beauty',
-      discount: 'Up to 4% cashback on health and beauty products',
-      description: 'Priceline is one of Australia\'s leading health and beauty retailers, selling cosmetics, skincare, fragrances, vitamins, medicines, and personal care products. ShopBack members earn up to 4% cashback on Priceline online purchases, which can be stacked with Priceline Sister Club loyalty points.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'the-iconic-shopback',
-      name: 'THE ICONIC',
-      program: 'shopback',
-      category: 'Fashion',
-      discount: 'Up to 5% cashback on fashion purchases',
-      description: "THE ICONIC is Australia and New Zealand's largest online fashion and lifestyle destination, stocking over 1,000 brands across clothing, shoes, activewear, and beauty. ShopBack members earn up to 5% cashback on THE ICONIC purchases, making it one of the more rewarding ways to shop for fashion online.",
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-  ],
-
-  jbhifi_perks: [
-    {
-      id: 'jbhifi-main-jbhifi-perks',
-      name: 'JB Hi-Fi',
-      program: 'jbhifi_perks',
-      category: 'Electronics',
-      discount: 'Exclusive member pricing and early access to sales',
-      description: "JB Hi-Fi is Australia's largest consumer electronics and home entertainment retailer. JB Hi-Fi Perks members receive exclusive member-only pricing on selected TVs, laptops, phones, and gaming products, plus early access to major sales events like Black Friday and End of Financial Year sales.",
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'the-good-guys-jbhifi-perks',
-      name: 'The Good Guys',
-      program: 'jbhifi_perks',
-      category: 'Appliances',
-      discount: 'Member discounts on home appliances',
-      description: "The Good Guys is one of Australia's largest appliance retailers, selling washing machines, refrigerators, dishwashers, air conditioners, TVs, and small kitchen appliances. As a JB Hi-Fi Group brand, Perks members may access special member pricing on selected The Good Guys products.",
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'microsoft-jbhifi-perks',
-      name: 'Microsoft',
-      program: 'jbhifi_perks',
-      category: 'Software',
-      discount: 'Discounted Microsoft 365 subscriptions',
-      description: 'Microsoft is the publisher of Windows, Microsoft 365, Xbox, and Surface devices. JB Hi-Fi Perks members can access discounted Microsoft 365 Personal and Family subscriptions including Word, Excel, PowerPoint, Outlook, Teams, and 1TB OneDrive storage. Subscriptions purchased in-store or via JB Hi-Fi.',
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'jbhifi-now-jbhifi-perks',
-      name: 'JB Hi-Fi NOW',
-      program: 'jbhifi_perks',
-      category: 'Streaming',
-      discount: 'Discounted entertainment subscription',
-      description: "JB Hi-Fi NOW is JB Hi-Fi's own entertainment subscription service offering streaming movies, TV shows, and music from major studios. Perks members receive a discounted subscription rate, with content available to stream across smart TVs, phones, tablets, and computers.",
-      deepLink: '',
-      addedAt: '2024-01-01T00:00:00.000Z',
-    },
-    {
-      id: 'sony-jbhifi-perks',
-      name: 'Sony',
-      program: 'jbhifi_perks',
-      category: 'Electronics',
-      discount: 'Exclusive pricing on Sony products at JB Hi-Fi',
-      description: 'Sony is a leading global electronics brand known for PlayStation consoles, Bravia TVs, Alpha cameras, WH-1000XM headphones, and Xperia smartphones. JB Hi-Fi Perks members can access exclusive member pricing on selected Sony products, particularly headphones, cameras, and home audio equipment.',
       deepLink: '',
       addedAt: '2024-01-01T00:00:00.000Z',
     },
@@ -839,27 +677,137 @@ function getMerchantsByCategory(category) {
 }
 
 function buildImportPayload(programId, programName, rawText) {
-  const prompt =
-    'You are extracting merchant and perk data from raw text copied from a benefits portal.\n\n' +
-    'Extract every merchant or perk listed and return them as a JSON array.\n\n' +
-    'Program ID: ' + programId + '\n' +
-    'Program Name: ' + programName + '\n\n' +
-    'Each object in the array must have EXACTLY these fields (all must be strings):\n' +
-    '  "id"          — kebab-case slug unique to this merchant+program, e.g. "woolworths-' + programId + '"\n' +
-    '  "name"        — merchant display name\n' +
+  const timestamp = new Date().toISOString();
+
+  const schemaBlock =
+    'Each object must have EXACTLY these fields (all must be strings):\n' +
+    '  "id"          — kebab-case slug from the merchant name only. Never include the program name. e.g. "jb-hi-fi", "woolworths", "event-cinemas"\n' +
+    '  "name"        — normalised common trading name. e.g. "JB Hi-Fi" not "JB HI-FI GIFT CARDS", "Woolworths" not "WOOLWORTHS SUPERMARKET EGIFT CARD"\n' +
     '  "program"     — must be "' + programId + '"\n' +
-    '  "category"    — best fit from: Electronics, Travel, Flights, Accommodation, Car Rental, Grocery, Dining, Fashion, Health, Beauty, Entertainment, Streaming, Financial, Insurance, Automotive, General Retail, Home, Sport, Education, Pets, Other\n' +
-    '  "discount"    — concise benefit description, e.g. "5% off all purchases instore and online"\n' +
-    '  "description" — verbose, human-readable. Explain who the merchant is and what the specific benefit is, as if to someone who has never heard of them.\n' +
-    '  "deepLink"    — URL to the offer page if found in the text, otherwise empty string ""\n' +
-    '  "addedAt"     — use exactly this value: "' + new Date().toISOString() + '"\n\n' +
-    'Return ONLY a valid JSON array. No markdown, no code fences, no explanation. Raw JSON only.\n\n' +
-    'TEXT:\n' + rawText;
+    '  "category"    — see rules above\n' +
+    '  "discount"    — see rules above\n' +
+    '  "description" — see rules above\n' +
+    '  "deepLink"    — see rules above\n' +
+    '  "addedAt"     — use exactly: "' + timestamp + '"\n\n' +
+    'Return ONLY a valid JSON array. No markdown, no code fences, no explanation. Raw JSON only.\n\nTEXT:\n' + rawText;
+
+  let header;
+
+  switch (programId) {
+    case 'nrma':
+      header =
+        'Extract merchant data from the NRMA Member Benefits portal text below.\n\n' +
+        'Format: each entry has a merchant name, a description blurb, and two prices — original (strikethrough) and discounted.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — calculate % off from the two prices: round((original − discounted) / original × 100), e.g. "15% off (A$45.05 vs A$53.00)"\n' +
+        '  "description" — use the blurb text verbatim\n' +
+        '  "deepLink"    — empty string (not present in this format)\n' +
+        '  "category"    — infer from merchant type, e.g. "Experiences & Attractions", "Wildlife & Zoos", "Dining", "Travel", "Health & Beauty", "Entertainment"\n\n';
+      break;
+
+    case 'rewardgateway':
+      header =
+        'Extract merchant data from the Work RewardGateway portal text below.\n\n' +
+        'Format: each entry has a merchant name, a truncated blurb, a discount rate ("Earn X%" or "Save X%"), and a Check offers URL.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — e.g. "Earn 9% cashback" or "Save 5%"\n' +
+        '  "description" — use the blurb verbatim (truncated is fine)\n' +
+        '  "deepLink"    — extract the Check offers URL exactly as it appears\n' +
+        '  "category"    — infer from merchant type\n\n';
+      break;
+
+    case 'bupa':
+      header =
+        'Extract merchant data from the Bupa Member Benefits portal text below.\n\n' +
+        'The paste may contain three formats — handle all of them:\n\n' +
+        '1. eGift cards — merchant name, discount %, URL\n' +
+        '   "discount": e.g. "4% off eGift card"\n' +
+        '   "description": empty string\n' +
+        '   "deepLink": extract URL exactly\n' +
+        '   "category": "eGift Cards"\n\n' +
+        '2. Restaurant dining — price tier ($ signs), merchant name, suburb, discount %, URL\n' +
+        '   "discount": e.g. "8% off dining"\n' +
+        '   "description": include suburb, e.g. "Located in Sans Souci"\n' +
+        '   "deepLink": extract URL exactly\n' +
+        '   "category": "Dining"\n\n' +
+        '3. Travel offers — prose offer description with embedded URL\n' +
+        '   "name": extract merchant name from the description text\n' +
+        '   "discount": extract the offer value, e.g. "Save up to $500 on Economy fares", "15% off travel insurance"\n' +
+        '   "description": the offer text verbatim\n' +
+        '   "deepLink": extract URL exactly\n' +
+        '   "category": "Travel"\n\n';
+      break;
+
+    case 'qantas_shopping':
+      header =
+        'Extract merchant data from the Qantas Shopping Portal text below.\n\n' +
+        'Format: each entry has a merchant name, points per $1 spent, and an optional promo badge (BONUS POINTS, FREE SHIPPING, etc).\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — e.g. "4 Qantas pts per $1 spent"\n' +
+        '  "description" — include promo badge if present, e.g. "Bonus points offer available"; otherwise empty string\n' +
+        '  "deepLink"    — empty string (not present in this format)\n' +
+        '  "category"    — infer from merchant type\n\n';
+      break;
+
+    case 'westpac_altitude':
+      header =
+        'Extract merchant data from the Westpac Altitude Cashback portal text below.\n\n' +
+        'Format: each entry has a merchant name, base cashback %, optional Westpac bonus cashback %, and optional end date.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — combine base + bonus if present, e.g. "Up to 7% cashback (incl. 1% Westpac bonus)"; if base only: "3% cashback"\n' +
+        '  "description" — include bonus and expiry if present, e.g. "Includes 2% Westpac bonus cashback, ends 30 June 2025"; otherwise empty string\n' +
+        '  "deepLink"    — empty string (not present in this format)\n' +
+        '  "category"    — infer from merchant type\n\n';
+      break;
+
+    case 'everyday_rewards':
+      header =
+        'Extract merchant data from the Everyday Rewards portal text below.\n\n' +
+        'Format: linked/unlinked status, merchant name, points rate or specific offer, and deep links.\n\n' +
+        'SKIP these points-transfer partners entirely (do not extract them): Westpac, St.George, Bank of Melbourne, BankSA, Amex, ANZ, any Accor property, Qantas Frequent Flyer.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — e.g. "1 Everyday Rewards pt per $1 spent", "Save 4c/L on fuel"\n' +
+        '  "description" — the offer description verbatim\n' +
+        '  "deepLink"    — extract the "Shop now" or "Join and link" URL\n' +
+        '  "category"    — infer from merchant type\n\n';
+      break;
+
+    case 'velocity_ff':
+      header =
+        'Extract merchant data from the Velocity Frequent Flyer offers page text below.\n\n' +
+        'Format: each entry has a merchant name, a fixed point grant (e.g. "10,000 Points"), and a URL.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — e.g. "10,000 Velocity pts (one-off)"\n' +
+        '  "description" — empty string\n' +
+        '  "deepLink"    — extract URL exactly\n' +
+        '  "category"    — infer from merchant type\n\n';
+      break;
+
+    case 'velocity_shopping':
+      header =
+        'Extract merchant data from the Velocity Shopping portal text below.\n\n' +
+        'Format: each entry has a merchant name, points per $1 spent (e.g. "AU$1 = 6 Points"), optional "was X points" bonus context, and a URL.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — e.g. "6 Velocity pts per $1 spent"\n' +
+        '  "description" — include bonus context if present, e.g. "Currently boosted from 2 pts per $1"; otherwise empty string\n' +
+        '  "deepLink"    — extract URL exactly\n' +
+        '  "category"    — infer from merchant type\n\n';
+      break;
+
+    default:
+      header =
+        'Extract merchant and perk data from the ' + programName + ' portal text below.\n\n' +
+        'Field rules:\n' +
+        '  "discount"    — concise benefit description, prefixed with enough context to be self-explanatory\n' +
+        '  "description" — verbatim text from the source; empty string if no description is present\n' +
+        '  "deepLink"    — URL to the offer page if found, otherwise empty string\n' +
+        '  "category"    — infer from merchant type\n\n';
+  }
 
   return {
     model: 'claude-sonnet-4-6',
     max_tokens: 64000,
-    messages: [{ role: 'user', content: prompt }],
+    messages: [{ role: 'user', content: header + schemaBlock }],
   };
 }
 

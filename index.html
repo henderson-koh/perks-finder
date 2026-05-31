@@ -202,7 +202,7 @@
 
     .result-arrow { color: var(--text3); font-size: 18px; flex-shrink: 0; }
 
-    /* ── Browse screen ────────────────────────────────────────────── */
+    /* ── Programs screen ─────────────────────────────────────────── */
     .screen-header {
       padding: 20px 16px 4px;
     }
@@ -213,72 +213,43 @@
       letter-spacing: -0.4px;
     }
 
-    /* Category grid */
-    .cat-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      padding: 12px 16px 24px;
-    }
-
-    .cat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 14px;
-      cursor: pointer;
-      min-height: 80px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: background 0.1s;
-    }
-
-    .cat-card:active { background: var(--surface2); }
-
-    .cat-name {
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .cat-count {
-      font-size: 12px;
-      color: var(--text2);
-      margin-top: 6px;
-    }
-
-    /* Drill-down header */
-    .drill-header {
+    .program-card {
       display: flex;
       align-items: center;
-      padding: 0 16px;
-      height: 56px;
-      gap: 8px;
+      padding: 14px 16px;
       border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
     }
 
-    .back-btn {
-      background: none;
-      border: none;
-      color: var(--accent);
+    .program-card-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .program-card-name {
       font-size: 15px;
       font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      padding: 8px 0;
-      min-height: 44px;
-      white-space: nowrap;
-    }
-
-    .drill-title {
-      font-size: 17px;
-      font-weight: 700;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
+    .program-card-meta {
+      font-size: 12px;
+      color: var(--text2);
+      margin-top: 3px;
+    }
+
+    .program-card-action { margin-left: 12px; flex-shrink: 0; }
+
+    .manual-label { font-size: 12px; color: var(--text3); font-style: italic; }
+
+    .programs-footer {
+      margin: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sm { height: 36px; padding: 0 14px; font-size: 13px; }
 
     /* ── Manage / Settings screen ──────────────────────────────────── */
     .card {
@@ -385,39 +356,6 @@
 
     .empty-state p       { font-size: 16px; margin-bottom: 6px; color: var(--text); }
     .empty-state .hint   { font-size: 14px; color: var(--text2); }
-
-    /* ── Stat strip (Manage) ──────────────────────────────────────── */
-    .stat-strip {
-      display: flex;
-      margin: 16px 16px 0;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .stat-item {
-      flex: 1;
-      padding: 14px 12px;
-      text-align: center;
-      border-right: 1px solid var(--border);
-    }
-
-    .stat-item:last-child { border-right: none; }
-
-    .stat-value {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: var(--accent);
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text2);
-      font-weight: 500;
-      margin-top: 1px;
-    }
 
     /* ── Modal (bottom sheet) ─────────────────────────────────────── */
     .modal-overlay {
@@ -560,60 +498,13 @@
       </div>
     </section>
 
-    <!-- Browse -->
-    <section id="screen-browse" class="screen">
-      <div id="browse-cat-view">
-        <div class="screen-header">
-          <h2>Browse</h2>
-        </div>
-        <div id="browse-categories" class="cat-grid"></div>
-      </div>
-      <div id="browse-drill-view" style="display:none">
-        <div class="drill-header">
-          <button id="browse-back" class="back-btn">&#8592; Back</button>
-          <span id="browse-cat-title" class="drill-title"></span>
-        </div>
-        <div id="browse-merchant-list"></div>
-      </div>
-    </section>
-
-    <!-- Manage -->
-    <section id="screen-manage" class="screen">
+    <!-- Programs -->
+    <section id="screen-programs" class="screen">
       <div class="screen-header">
-        <h2>Manage</h2>
+        <h2>Programs</h2>
       </div>
-
-      <div class="stat-strip">
-        <div class="stat-item">
-          <div class="stat-value" id="stat-programs">&mdash;</div>
-          <div class="stat-label">Programs</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-value" id="stat-merchants">&mdash;</div>
-          <div class="stat-label">Merchants</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">AI Import</div>
-        <p class="setting-desc">Paste raw text from a benefits portal and Claude will extract merchants automatically.</p>
-        <div class="btn-row">
-          <button id="btn-ai-import" class="btn btn-primary">Import with AI</button>
-        </div>
-        <p id="ai-import-status" class="status-msg"></p>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Data</div>
-        <p class="setting-desc">Export a backup of all your perks data, or restore from a previous backup.</p>
-        <div class="btn-row">
-          <button id="btn-export" class="btn btn-primary">Export Backup</button>
-          <button id="btn-import-file" class="btn btn-ghost" style="color:var(--text)">Import Backup</button>
-        </div>
-        <input id="import-file-input" type="file" accept=".json" style="display:none">
-        <p id="data-status" class="status-msg"></p>
-      </div>
-
+      <p id="ai-import-status" class="status-msg" style="padding:4px 16px 0; min-height:0"></p>
+      <div id="program-cards"></div>
       <div class="card">
         <div class="card-title">Claude API Key</div>
         <div id="key-indicator" class="key-indicator unset">
@@ -632,6 +523,12 @@
         </div>
         <p id="key-status" class="status-msg"></p>
       </div>
+      <div class="programs-footer">
+        <button id="btn-export" class="btn btn-ghost" style="color:var(--text)">Export Backup</button>
+        <button id="btn-import-file" class="btn btn-ghost" style="color:var(--text)">Import Backup</button>
+        <input id="import-file-input" type="file" accept=".json" style="display:none">
+      </div>
+      <p id="data-status" class="status-msg" style="padding:0 16px"></p>
     </section>
 
   </main>
@@ -654,15 +551,18 @@
           <option value="bupa">Bupa</option>
           <option value="qantas_shopping">Qantas Shopping Portal</option>
           <option value="qantas_money">Qantas FF Card (Qantas Money)</option>
-          <option value="bankwest">Bankwest CC (More Rewards)</option>
           <option value="westpac_altitude">Westpac Altitude Qantas Black</option>
           <option value="commbank_yello">CommBank CC (Yello)</option>
           <option value="everyday_rewards">Everyday Rewards</option>
-          <option value="shopback">ShopBack</option>
-          <option value="jbhifi_perks">JB Hi-Fi Perks</option>
           <option value="velocity_ff">Velocity FF</option>
           <option value="velocity_shopping">Velocity Shopping Portal</option>
         </select>
+        <div id="modal-merge-row" style="display:none; margin-top:10px">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:0.9rem; color:var(--text-secondary)">
+            <input type="checkbox" id="modal-replace-check">
+            Replace existing data for this program
+          </label>
+        </div>
         <div class="setting-label" style="margin-top:14px">Pasted text</div>
         <textarea id="modal-paste" class="modal-textarea" placeholder="Paste benefit portal text here&hellip;" rows="8"></textarea>
         <div class="btn-row" style="margin-top:14px">
@@ -692,22 +592,14 @@
       </svg>
       <span>Search</span>
     </button>
-    <button class="nav-btn" data-screen="browse" aria-label="Browse">
+    <button class="nav-btn" data-screen="programs" aria-label="Programs">
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <rect x="3" y="3" width="7" height="7" rx="1"/>
         <rect x="14" y="3" width="7" height="7" rx="1"/>
         <rect x="3" y="14" width="7" height="7" rx="1"/>
         <rect x="14" y="14" width="7" height="7" rx="1"/>
       </svg>
-      <span>Browse</span>
-    </button>
-    <button class="nav-btn" data-screen="manage" aria-label="Manage">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
-        <path d="M12 2v2M12 20v2M2 12h2M20 12h2"/>
-      </svg>
-      <span>Manage</span>
+      <span>Programs</span>
     </button>
   </nav>
 </div>
@@ -749,11 +641,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if (id === 'search') {
       setTimeout(() => document.getElementById('search-input').focus(), 50);
     }
-    if (id === 'browse') {
-      showBrowseCatView();
-      renderBrowse();
-    }
-    if (id === 'manage') refreshManageStats();
+    if (id === 'programs') renderPrograms();
   });
 });
 
@@ -818,67 +706,52 @@ searchResults.addEventListener('click', function(e) {
   if (item && item.dataset.link) window.open(item.dataset.link, '_blank', 'noopener');
 });
 
-// ── Browse ────────────────────────────────────────────────────────────────
-function showBrowseCatView() {
-  document.getElementById('browse-cat-view').style.display   = '';
-  document.getElementById('browse-drill-view').style.display = 'none';
+// ── Programs ──────────────────────────────────────────────────────────────
+const MANUAL_PROGRAMS = new Set(['qantas_money', 'commbank_yello']);
+
+function timeAgo(isoString) {
+  const diff   = Date.now() - new Date(isoString).getTime();
+  const mins   = Math.floor(diff / 60000);
+  const hours  = Math.floor(diff / 3600000);
+  const days   = Math.floor(diff / 86400000);
+  const weeks  = Math.floor(days / 7);
+  const months = Math.floor(days / 30);
+  if (mins  < 1)  return 'just now';
+  if (hours < 1)  return mins  + ' minute' + (mins  !== 1 ? 's' : '') + ' ago';
+  if (days  < 1)  return hours + ' hour'   + (hours !== 1 ? 's' : '') + ' ago';
+  if (weeks < 1)  return days  + ' day'    + (days  !== 1 ? 's' : '') + ' ago';
+  if (months < 1) return weeks + ' week'   + (weeks !== 1 ? 's' : '') + ' ago';
+  return months + ' month' + (months !== 1 ? 's' : '') + ' ago';
 }
 
-function renderBrowse() {
-  const cats      = getCategoryList();
-  const container = document.getElementById('browse-categories');
-  if (!cats.length) {
-    container.innerHTML =
-      '<div class="empty-state" style="grid-column:1/-1">' +
-        '<div class="empty-icon">&#128193;</div>' +
-        '<p>No data yet</p>' +
-        '<p class="hint">Add perks via Manage</p>' +
-      '</div>';
-    return;
-  }
-  container.innerHTML = cats.map(cat => {
-    const count = getMerchantsByCategory(cat).length;
-    return '<div class="cat-card" data-cat="' + esc(cat) + '">' +
-      '<span class="cat-name">'  + esc(cat) + '</span>' +
-      '<span class="cat-count">' + count + ' perk' + (count !== 1 ? 's' : '') + '</span>' +
+function renderPrograms() {
+  const data      = loadData() || createEmptyData();
+  const container = document.getElementById('program-cards');
+  container.innerHTML = Object.values(PROGRAMS).map(prog => {
+    const progData  = data.programs[prog.id] || { merchants: [] };
+    const count     = progData.merchants.length;
+    const lastAdded = count
+      ? progData.merchants.reduce((max, m) => m.addedAt > max ? m.addedAt : max, progData.merchants[0].addedAt)
+      : null;
+    const countText = count + ' merchant' + (count !== 1 ? 's' : '');
+    const dateText  = lastAdded ? 'Last updated ' + timeAgo(lastAdded) : 'No data yet';
+    const action    = MANUAL_PROGRAMS.has(prog.id)
+      ? '<span class="manual-label">Manual entry</span>'
+      : '<button class="btn btn-primary btn-sm" data-import="' + esc(prog.id) + '">Import</button>';
+    return '<div class="program-card">' +
+      '<div class="program-card-body">' +
+        '<div class="program-card-name">' + esc(prog.name) + '</div>' +
+        '<div class="program-card-meta">' + esc(countText) + ' &middot; ' + esc(dateText) + '</div>' +
+      '</div>' +
+      '<div class="program-card-action">' + action + '</div>' +
     '</div>';
   }).join('');
 }
 
-document.getElementById('browse-categories').addEventListener('click', function(e) {
-  const card = e.target.closest('.cat-card');
-  if (card) openCategory(card.dataset.cat);
+document.getElementById('program-cards').addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-import]');
+  if (btn) openImportModal(btn.dataset.import);
 });
-
-function openCategory(cat) {
-  document.getElementById('browse-cat-view').style.display   = 'none';
-  document.getElementById('browse-drill-view').style.display = '';
-  document.getElementById('browse-cat-title').textContent    = cat;
-  document.getElementById('browse-merchant-list').innerHTML  =
-    getMerchantsByCategory(cat).map(renderResultItem).join('');
-}
-
-document.getElementById('browse-back').addEventListener('click', function() {
-  showBrowseCatView();
-  renderBrowse();
-});
-
-document.getElementById('browse-merchant-list').addEventListener('click', function(e) {
-  const item = e.target.closest('.result-item');
-  if (item && item.dataset.link) window.open(item.dataset.link, '_blank', 'noopener');
-});
-
-// ── Manage ────────────────────────────────────────────────────────────────
-function refreshManageStats() {
-  const data = loadData();
-  let programs = 0, merchants = 0;
-  if (data) {
-    programs = Object.keys(data.programs).length;
-    for (const p of Object.values(data.programs)) merchants += p.merchants.length;
-  }
-  document.getElementById('stat-programs').textContent  = programs;
-  document.getElementById('stat-merchants').textContent = merchants;
-}
 
 function refreshKeyIndicator() {
   const key = loadApiKey();
@@ -937,7 +810,7 @@ document.getElementById('import-file-input').addEventListener('change', function
     try {
       importFromJson(evt.target.result);
       fuseInstance = null;
-      refreshManageStats();
+      renderPrograms();
       flash(document.getElementById('data-status'), 'Backup restored successfully.', 'ok');
     } catch (err) {
       flash(document.getElementById('data-status'), 'Import failed: ' + err.message, 'err');
@@ -952,7 +825,7 @@ let extractedMerchants = [];
 let selectedProgramId   = '';
 let selectedProgramName = '';
 
-function openImportModal() {
+function openImportModal(preselectedProgramId) {
   extractedMerchants  = [];
   selectedProgramId   = '';
   selectedProgramName = '';
@@ -960,6 +833,13 @@ function openImportModal() {
   document.getElementById('modal-paste').value           = '';
   document.getElementById('modal-status').textContent    = '';
   document.getElementById('modal-status').className      = 'status-msg';
+  document.getElementById('modal-merge-row').style.display = 'none';
+  document.getElementById('modal-replace-check').checked   = false;
+  if (preselectedProgramId) {
+    const sel = document.getElementById('modal-program-select');
+    sel.value = preselectedProgramId;
+    sel.dispatchEvent(new Event('change'));
+  }
   showModalStep('input');
   document.getElementById('import-modal').style.display = '';
   setTimeout(() => document.getElementById('modal-program-select').focus(), 50);
@@ -974,11 +854,21 @@ function showModalStep(step) {
   document.getElementById('modal-step-preview').style.display = step === 'preview' ? '' : 'none';
 }
 
-document.getElementById('btn-ai-import').addEventListener('click', openImportModal);
 document.getElementById('modal-close').addEventListener('click', closeImportModal);
 
 document.getElementById('import-modal').addEventListener('click', function(e) {
   if (e.target === this) closeImportModal();
+});
+
+document.getElementById('modal-program-select').addEventListener('change', function() {
+  const programId  = this.value;
+  const mergeRow   = document.getElementById('modal-merge-row');
+  const replaceChk = document.getElementById('modal-replace-check');
+  if (!programId) { mergeRow.style.display = 'none'; return; }
+  mergeRow.style.display = '';
+  const data      = loadData();
+  const merchants = data && data.programs[programId] && data.programs[programId].merchants;
+  replaceChk.checked = !merchants || merchants.length === 0;
 });
 
 document.getElementById('modal-extract-btn').addEventListener('click', async function() {
@@ -1041,10 +931,12 @@ document.getElementById('modal-extract-btn').addEventListener('click', async fun
 });
 
 function renderPreview(merchants, skipped) {
+  const replaceMode = document.getElementById('modal-replace-check').checked;
+  const actionText  = replaceMode ? 'replace all existing data in' : 'merge into';
   document.getElementById('modal-preview-summary').textContent =
     'Found ' + merchants.length + ' merchant' + (merchants.length !== 1 ? 's' : '') +
     (skipped ? ' (' + skipped + ' skipped — incomplete data)' : '') +
-    '. Review and confirm to merge into ' + selectedProgramName + '.';
+    '. Review and confirm to ' + actionText + ' ' + selectedProgramName + '.';
 
   document.getElementById('modal-preview-list').innerHTML =
     merchants.map(m =>
@@ -1058,26 +950,41 @@ function renderPreview(merchants, skipped) {
 document.getElementById('modal-confirm-btn').addEventListener('click', function() {
   if (!extractedMerchants.length) return;
 
-  const existing = loadData() || createEmptyData();
-  const wrapped  = {
-    version: 1,
-    programs: {
-      [selectedProgramId]: {
-        id: selectedProgramId,
-        name: selectedProgramName,
-        merchants: extractedMerchants,
-      },
-    },
-  };
-  saveData(mergeData(existing, wrapped));
-  fuseInstance = null;
-  refreshManageStats();
+  const replaceMode = document.getElementById('modal-replace-check').checked;
+  const existing    = loadData() || createEmptyData();
 
-  const count = extractedMerchants.length;
+  let saved;
+  if (replaceMode) {
+    existing.programs[selectedProgramId] = {
+      id: selectedProgramId,
+      name: selectedProgramName,
+      merchants: extractedMerchants,
+    };
+    saved = existing;
+  } else {
+    const wrapped = {
+      version: 1,
+      programs: {
+        [selectedProgramId]: {
+          id: selectedProgramId,
+          name: selectedProgramName,
+          merchants: extractedMerchants,
+        },
+      },
+    };
+    saved = mergeData(existing, wrapped);
+  }
+
+  saveData(saved);
+  fuseInstance = null;
+  renderPrograms();
+
+  const count      = extractedMerchants.length;
+  const actionWord = replaceMode ? 'imported into' : 'merged into';
   closeImportModal();
   flash(
     document.getElementById('ai-import-status'),
-    count + ' merchant' + (count !== 1 ? 's' : '') + ' merged into ' + selectedProgramName + '.',
+    count + ' merchant' + (count !== 1 ? 's' : '') + ' ' + actionWord + ' ' + selectedProgramName + '.',
     'ok'
   );
 });
@@ -1093,8 +1000,7 @@ function esc(str) {
 
 // ── Init ──────────────────────────────────────────────────────────────────
 preseedIfEmpty();
-renderBrowse();
-refreshManageStats();
+renderPrograms();
 refreshKeyIndicator();
 
 // ── Service worker ────────────────────────────────────────────────────────
